@@ -58,22 +58,17 @@ class SkinDataset(Dataset):
 def load_skin_datasets(img_path, label_path, filter=True):
     df = pd.read_csv(label_path)
     df['label'] = 2 * df['melanoma'] + df['seborrheic_keratosis']
-    df = df.drop(columns=['melanoma', 'seborrheicz_keratosis'])
-    df = df.to_dict('list')
     if filter:
-        df = df[df['labels'] != 2]
+        df = df[df['label'] != 2]
+    df = df.to_dict('list')
 
     images = []
-    for filename in df['image_id']:
+    for filename in df['image_id'][:10]:
         img = cv2.imread(os.path.join(img_path, filename) + '.jpg')
         if img is not None:
+            img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
             images.append(img)
+            print(img.shape)
+            
     images = np.concatenate(images)
-    labels = np.array(df['labels'], dtype=np.int)
-
-    X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.25, random_state=1)
-
-    train_dataset = SkinDataset(X_train, y_train)
-    test_dataset = SkinDataset(X_test, y_test)
-
-    return train_dataset, test_dataset
+    labels = np.array(df['label'][:10], dtype=np.int)
