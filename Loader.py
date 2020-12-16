@@ -69,6 +69,13 @@ def load_skin_datasets(img_path, label_path, filter=True):
             img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
             images.append(img)
             print(img.shape)
-            
+    
     images = np.concatenate(images)
     labels = np.array(df['label'][:10], dtype=np.int)
+
+    X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.25, random_state=1)
+
+    train_dataset = SkinDataset(X_train, y_train)
+    test_dataset = SkinDataset(X_test, y_test)
+
+    return train_dataset, test_dataset
