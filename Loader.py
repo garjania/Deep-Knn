@@ -42,9 +42,9 @@ class SkinDataset(Dataset):
 
         self.data = images
         self.labels = labels
-        print(self.data.shape)
-        self.data_0 = torch.tensor(self.data[:,self.labels == 0,:], dtype=torch.float32)
-        self.data_1 = torch.tensor(self.data[:,self.labels == 1,:], dtype=torch.float32)
+        self.data_0 = torch.tensor(self.data[self.labels == 0], dtype=torch.float32)
+        self.data_1 = torch.tensor(self.data[self.labels == 1], dtype=torch.float32)
+        print(self.data_0.shape)
         self.data = torch.tensor(self.data, dtype=torch.float32)
         self.labels = torch.tensor(self.labels, dtype=torch.int64)
 
