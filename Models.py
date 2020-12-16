@@ -28,7 +28,7 @@ class VGG19(nn.Module):
         self.rep_dim = rep_dim
         # self.conv = nn.Conv2d(1, 3, 3, padding=1)
         self.vgg = torch.hub.load('pytorch/vision:v0.6.0', 'vgg19', pretrained=False)
-        self.lin = torch.Linear(1000, self.rep_dim)
+        self.lin = torch.nn.Linear(1000, self.rep_dim)
 
     def forward(self, x):
         # z = self.conv(x)
