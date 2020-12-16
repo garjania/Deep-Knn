@@ -4,7 +4,7 @@ from Loader import load_skin_datasets
 from Models import VGG19
 
 PATHS = {'images_path': '../ISIC-2017_Training_Data',
-         'labels': 'ISIC-2017_Training_Part3_GroundTruth.csv'}
+         'labels': '../ISIC-2017_Training_Data/ISIC-2017_Training_Part3_GroundTruth.csv'}
 SETTING = {'optimizer': 'adam',
            'lr': 0.001,
            'epochs': 100,
