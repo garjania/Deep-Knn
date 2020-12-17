@@ -54,6 +54,14 @@ class SkinDataset(Dataset):
         return len(self.data)
 
 
+def add_padding(img):
+    frame = np.zeros((2048, 2048, 3))
+    x_pad = int((2048 - img.shape[0])/2)
+    y_pad = int((2048 - img.shape[1])/2)
+    frame[x_pad:2048-x_pad,y_pad:2048-y_pad,:] = img
+    return frame
+
+
 def load_skin_datasets(img_path, label_path, filter=True):
     df = pd.read_csv(label_path)
     df['label'] = 2 * df['melanoma'] + df['seborrheic_keratosis']
@@ -62,16 +70,17 @@ def load_skin_datasets(img_path, label_path, filter=True):
     df = df.to_dict('list')
 
     images = []
-    for filename in df['image_id'][:131]:
+    for filename in df['image_id']:
         img = cv2.imread(os.path.join(img_path, filename) + '.jpg')
         if img is not None:
-            # img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
+            img = add_padding(img)
+            img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
             print(img.shape)
-            images.append(img.tolist())
+            images.append(img)
 
     
-    images = np.array(images, dtype=object)
-    labels = np.array(df['label'][:131], dtype=np.int)
+    images = np.concatenate(images)
+    labels = np.array(df['label'], dtype=np.int)
 
     X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.25, random_state=1)
 
