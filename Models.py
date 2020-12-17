@@ -33,7 +33,7 @@ class VGG19(nn.Module):
     def forward(self, x):
         # z = self.conv(x)
         if x.numel() == 0:
-            
+            print(x, x.shape)
         z = self.vgg(x)
         z = self.lin(z)
         return z
