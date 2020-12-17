@@ -58,7 +58,7 @@ def add_padding(img):
     frame = np.zeros((2048, 2048, 3))
     x_pad = int((2048 - img.shape[0])/2)
     y_pad = int((2048 - img.shape[1])/2)
-    frame[x_pad:2048-x_pad,y_pad:2048-y_pad,:] = img
+    frame[x_pad:x_pad+img.shape[0], y_pad:y_pad+img.shape[1], :] = img
     return frame
 
 
