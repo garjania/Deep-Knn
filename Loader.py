@@ -68,17 +68,21 @@ def load_skin_datasets(img_path, label_path, filter=True):
     if filter:
         df = df[df['label'] != 2]
     df = df.to_dict('list')
-
+    maxes = [0,0]
     images = []
     for filename in df['image_id']:
         img = cv2.imread(os.path.join(img_path, filename) + '.jpg')
         if img is not None:
-            img = add_padding(img)
-            img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
+            # img = add_padding(img)
+            # img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
             print(img.shape)
+            if img.shape[0] > maxes[0]:
+                maxes[0] = img.shape[0]
+            if img.shape[1] > maxes[1]:
+                maxes[1] = img.shape[1]
             images.append(img)
 
-    
+    print(maxes)
     images = np.concatenate(images)
     labels = np.array(df['label'], dtype=np.int)
 
