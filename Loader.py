@@ -54,10 +54,14 @@ class SkinDataset(Dataset):
         return len(self.data)
 
 
-def add_padding(img):
-    frame = np.zeros((2048, 2048, 3))
-    x_pad = int((2048 - img.shape[0])/2)
-    y_pad = int((2048 - img.shape[1])/2)
+def resize(img):
+    if img.shape[1] > 1024:
+        new_width = 1024
+        new_height = int(img.shape[1] * 1024/img.shape[1])
+        img = cv2.resize(img, (new_width, new_height))
+    frame = np.zeros((1024, 1024, 3))
+    x_pad = int((1024 - img.shape[0])/2)
+    y_pad = int((1024 - img.shape[1])/2)
     frame[x_pad:x_pad+img.shape[0], y_pad:y_pad+img.shape[1], :] = img
     return frame
 
@@ -73,16 +77,11 @@ def load_skin_datasets(img_path, label_path, filter=True):
     for filename in df['image_id']:
         img = cv2.imread(os.path.join(img_path, filename) + '.jpg')
         if img is not None:
-            # img = add_padding(img)
-            # img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
+            img = resize(img)
+            img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
             print(img.shape)
-            if img.shape[0] > maxes[0]:
-                maxes[0] = img.shape[0]
-            if img.shape[1] > maxes[1]:
-                maxes[1] = img.shape[1]
             images.append(img)
 
-    print(maxes)
     images = np.concatenate(images)
     labels = np.array(df['label'], dtype=np.int)
 
