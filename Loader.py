@@ -65,11 +65,11 @@ def load_skin_datasets(img_path, label_path, filter=True):
     for filename in df['image_id'][:131]:
         img = cv2.imread(os.path.join(img_path, filename) + '.jpg')
         if img is not None:
-            img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
-            images.append(img)
-            print(img.shape)
+            # img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
+            images.append(img.tolist())
+
     
-    images = np.concatenate(images)
+    images = np.array(images, dtype=object)
     labels = np.array(df['label'][:131], dtype=np.int)
 
     X_train, X_test, y_train, y_test = train_test_split(images, labels, test_size=0.25, random_state=1)
