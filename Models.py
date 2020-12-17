@@ -32,6 +32,8 @@ class VGG19(nn.Module):
 
     def forward(self, x):
         # z = self.conv(x)
+        if x.numel() == 0:
+            
         z = self.vgg(x)
         z = self.lin(z)
         return z
