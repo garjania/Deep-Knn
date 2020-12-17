@@ -67,6 +67,7 @@ def load_skin_datasets(img_path, label_path, filter=True):
         if img is not None:
             img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
             images.append(img)
+            print(img.shape)
     
     images = np.concatenate(images)
     labels = np.array(df['label'][:131], dtype=np.int)
