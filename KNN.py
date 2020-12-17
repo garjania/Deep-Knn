@@ -53,27 +53,36 @@ class DeepKnn():
         optimizer = optim.Adam(net.parameters(), lr=lr, weight_decay=weight_decay)
 
         scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=lr_milestones, gamma=0.1)
-
+        
+        labels = train_loader.dataset.labels.numpy()
         # Training
         for epoch in range(epochs):
             print('Epoch: {}'.format(epoch))
-            net.eval()
-            with torch.no_grad():
-              self.embeddings[0] = net(train_loader.dataset.data_0.cuda()).cpu().numpy()
-              self.embeddings[1] = net(train_loader.dataset.data_1.cuda()).cpu().numpy()
-              self.nn[0] = BallTree(self.embeddings[0], leaf_size=self.K+self.M+2)
-              self.nn[1] = BallTree(self.embeddings[1], leaf_size=self.K+self.M+2)
-
-            net.train()
-            epoch_loss = 0.0
-            n_batches = 0
             
+            self.embeddings = [[], []]
+            outputs = []
+            
+            net.train()
             optimizer.zero_grad()
 
-            outputs = net(train_loader.dataset.data.cuda())
+            tbar = tqdm.tqdm(iter(train_loader), total=len(train_loader), position=0, leave=True)
+            for inputs, targets, idx in tbar:
+              batch_out = net(inputs.cuda())
+              for i, t in enumerate(targets):
+                self.embeddings[t.item()].append(batch_out[i].detach().cpu().numpy())
+              outputs.append(batch_out)
+            
+            self.embeddings[0] = np.concatenate(self.embeddings[0])
+            self.embeddings[1] = np.concatenate(self.embeddings[1])
+            self.nn[0] = BallTree(self.embeddings[0], leaf_size=self.K+self.M+2)
+            self.nn[1] = BallTree(self.embeddings[1], leaf_size=self.K+self.M+2)
+            
+            outputs = torch.cat(outputs)
             all_emb = outputs.detach().cpu().numpy()
-            labels = train_loader.dataset.labels.numpy()
             losses = []
+
+            epoch_loss = 0.0
+            n_batches = 0
 
             tbar = tqdm.tqdm(iter(train_loader), total=len(train_loader), position=0, leave=True)
             for _, targets, idx in tbar:
