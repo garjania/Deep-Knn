@@ -8,7 +8,7 @@ PATHS = {'images_path': '../ISIC-2017_Training_Data',
 SETTING = {'optimizer': 'adam',
            'lr': 0.001,
            'epochs': 100,
-           'batch_size': 128}
+           'batch_size': 64}
 
 if __name__ == '__main__':
     train, test = load_skin_datasets(PATHS['images_path'], PATHS['labels'])
