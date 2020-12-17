@@ -66,6 +66,7 @@ def load_skin_datasets(img_path, label_path, filter=True):
         img = cv2.imread(os.path.join(img_path, filename) + '.jpg')
         if img is not None:
             # img = np.expand_dims(np.moveaxis(img, -1, 0), 0)
+            print(img.shape)
             images.append(img.tolist())
 
     
